@@ -1,0 +1,10 @@
+﻿using System;
+
+namespace INDSA_Sem_A
+{
+     [Serializable]
+    public enum NodeType
+    {
+        BusStop,RestingPlace,Crossroads
+    }
+}

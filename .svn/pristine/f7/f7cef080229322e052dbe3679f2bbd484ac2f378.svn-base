@@ -1,0 +1,90 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+
+namespace INDSA_Sem_A
+{
+    public class Graph : IGraph
+    {
+        public Dictionary<string, Node> Nodes;
+
+        public Graph()
+        {
+            Nodes = new Dictionary<string, Node>();
+        }
+        public bool IsEmpty()
+        {
+            if (Nodes.Count == 0)
+            {
+                return true;
+            }
+             return false;
+        }
+
+        public int NumberOfElements()
+        {
+            return Nodes.Count;
+        }
+
+        public void AddNewNode(Node n)
+        {
+            Nodes.Add(n.Id,n);
+            /*
+            Node n = new Node(NodeType.Crossroads,new Point( 20,20));
+            Nodes.Add(n.Id,n);
+          * */
+        }
+
+        public void AddNewEdge(Node from , Node to)
+        {
+            Node accessed;
+            // zpristupnit vrchol, ze ktereho vede, 
+            if (Nodes.ContainsKey(from.Id))
+            {
+                accessed = Nodes[from.Id];
+            }
+            else
+            {
+                throw new System.NullReferenceException("Prvek neexistuje");
+            }
+            double distance = Math.Sqrt(Math.Pow(Math.Abs(80 - 40), 2) + Math.Pow(Math.Abs(160 - 40), 2));
+            //vlozit do nasledniku (pokud uz neexistuje)
+            Follower inserter = new Follower(to,new Edge(distance));
+            accessed.GetFollowers().AddLast(inserter);
+        }
+
+        public Node RemoveNode()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Edge RemoveEdge()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Node FindNode()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Edge FindEdge()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public List<Follower> GetFollowers()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public void GetAllNodes()
+        {
+            foreach (string s in Nodes.Keys)
+            {
+                Console.WriteLine("{0} - {1}",s,Nodes[s].ToString());
+                
+            }
+        }
+    }
+}

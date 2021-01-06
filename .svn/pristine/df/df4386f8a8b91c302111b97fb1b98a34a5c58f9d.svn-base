@@ -1,0 +1,24 @@
+﻿namespace INDSA_Sem_A
+{
+    public class Follower
+    {
+        private string Id;
+       
+        private Edge edge; // hrana, přes kterou se k vrcholu přistupuje 
+
+        public Follower(string id, Edge edge)
+        {
+            this.Id = id;
+            this.edge = edge;
+        }
+
+        public bool GetFollowingNode(out string Id, out double distance) /// vraci jestli lze prejit, vystupni atributy jsou id dalsiho vrcholu a vzdalenost
+        {
+            Id = this.Id;
+            distance = edge.GetDistance();
+            return edge.IsEnabled();
+        }
+        
+
+    }
+}

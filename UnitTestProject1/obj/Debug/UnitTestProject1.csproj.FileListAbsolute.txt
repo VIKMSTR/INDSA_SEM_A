@@ -1,0 +1,7 @@
+C:\Users\Viktor\Documents\C#\INDSA_Sem_A\UnitTestProject1\bin\Debug\UnitTestProject1.dll
+C:\Users\Viktor\Documents\C#\INDSA_Sem_A\UnitTestProject1\bin\Debug\UnitTestProject1.pdb
+C:\Users\Viktor\Documents\C#\INDSA_Sem_A\UnitTestProject1\bin\Debug\INDSA_Sem_A.exe
+C:\Users\Viktor\Documents\C#\INDSA_Sem_A\UnitTestProject1\bin\Debug\INDSA_Sem_A.pdb
+C:\Users\Viktor\Documents\C#\INDSA_Sem_A\UnitTestProject1\obj\Debug\UnitTestProject1.csprojResolveAssemblyReference.cache
+C:\Users\Viktor\Documents\C#\INDSA_Sem_A\UnitTestProject1\obj\Debug\UnitTestProject1.dll
+C:\Users\Viktor\Documents\C#\INDSA_Sem_A\UnitTestProject1\obj\Debug\UnitTestProject1.pdb

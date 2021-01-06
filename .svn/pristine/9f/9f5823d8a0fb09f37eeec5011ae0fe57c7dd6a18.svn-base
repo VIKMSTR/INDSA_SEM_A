@@ -1,0 +1,441 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+using INDSA_Sem_A.Dijkstra;
+using INDSA_Sem_A.Exceptions;
+
+namespace INDSA_Sem_A
+{
+    public partial class MainForm : Form
+    {
+        private Graph g;
+      
+        private List<DrawingNode> drawingNodes;
+
+        private List<INode> shortestPath; 
+        private Brush nodeBrush;
+        private Brush busBrush;
+        private Brush restBrush;
+        private Brush edgeBrush;
+        private Brush disabledBrush;
+        private Brush shortestBrush;
+        private Node created;
+        private INode from;
+        private INode to;
+        private INode nearestNode;
+        private bool begining;
+        private bool drawShortestPath;
+        private INode pathBegin;
+        private INode pathEnd;
+        private bool beginingPath;
+
+        private Dijkstra.DijkstraAlgorithm dijkstra;
+
+        public MainForm()
+        {
+            InitializeComponent();
+          panel2.Size = panel2.BackgroundImage.Size;
+            panel2.AutoScroll = true;
+            drawingNodes = new List<DrawingNode>();
+            shortestPath = new List<INode>();
+
+
+            nodeBrush = new SolidBrush(Color.Black);
+            busBrush = new SolidBrush(Color.BlueViolet);
+            restBrush = new SolidBrush(Color.DarkOrange);
+            edgeBrush = new SolidBrush(Color.SlateGray);
+            disabledBrush = new SolidBrush(Color.Red);
+            shortestBrush = new SolidBrush(Color.DarkBlue);
+            
+            NodeTypeCombo.SelectedIndex = 0;
+            created = null;
+            g = new Graph();
+            begining = true;
+            beginingPath = true;
+            dijkstra = new DijkstraAlgorithm(g);
+
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+             Graphics gx = e.Graphics;
+
+            if (drawingNodes.Count == 0)
+            {
+                return;
+            }
+           
+
+            #region DRAW NODES
+
+            foreach (DrawingNode dn in drawingNodes)
+            {
+                if (dn.nodeID.Contains("K"))
+                {
+                    gx.FillEllipse(nodeBrush, dn.drawLocation.X - 4, dn.drawLocation.Y - 4, 8, 8);
+                    gx.DrawString(dn.nodeID, new Font(FontFamily.GenericSansSerif, 6), nodeBrush, dn.drawLocation.X + 10,
+                                  dn.drawLocation.Y - 10);
+
+
+                }
+                else if (dn.nodeID.Contains("Z"))
+                {
+                    gx.FillEllipse(busBrush, dn.drawLocation.X - 4, dn.drawLocation.Y - 4, 8, 8);
+                    gx.DrawString(dn.nodeID, new Font(FontFamily.GenericSansSerif, 6), busBrush, dn.drawLocation.X + 10,
+                                  dn.drawLocation.Y - 10);
+
+
+                }
+                else
+                {
+                    gx.FillEllipse(restBrush, dn.drawLocation.X - 4, dn.drawLocation.Y - 4, 8, 8);
+                    gx.DrawString(dn.nodeID, new Font(FontFamily.GenericSansSerif, 6), restBrush, dn.drawLocation.X + 10,
+                                  dn.drawLocation.Y - 10);
+
+
+                }
+            }
+
+            #endregion
+
+            #region DRAW EDGES
+
+            INode n = null;
+            string key;
+            double dist;
+            foreach (DrawingNode dn in drawingNodes)
+            {
+                n = g.FindNode(dn.nodeID);
+                foreach (Follower f in n.GetFollowers())
+                {
+                    bool enabled = f.GetFollowingNode(out key, out dist);
+                    INode dest = g.FindNode(key);
+
+                    if (enabled)
+                    {
+                        gx.DrawLine(new Pen(edgeBrush,2), n.GetLocation().X, n.GetLocation().Y, dest.GetLocation().X, dest.GetLocation().Y);
+
+                    }
+                    else
+                    {
+                        gx.DrawLine(new Pen(disabledBrush,3), n.GetLocation().X, n.GetLocation().Y, dest.GetLocation().X, dest.GetLocation().Y);
+
+                    }/*
+                    Point distanceLocation;
+                    if (dest.GetLocation().X > n.GetLocation().X)
+                    {
+                         distanceLocation =
+                            new Point(
+                                n.GetLocation().X +
+                                Convert.ToInt32(Math.Abs(dest.GetLocation().X - n.GetLocation().X)/2) + 10,
+                                n.GetLocation().Y +
+                                Convert.ToInt32(Math.Abs(dest.GetLocation().Y - n.GetLocation().Y)/2));
+
+                    }
+                    else
+                    {
+                         distanceLocation =
+                            new Point(
+                                dest.GetLocation().X +
+                                Convert.ToInt32(Math.Abs(dest.GetLocation().X - n.GetLocation().X) / 2) + 10,
+                                dest.GetLocation().Y +
+                                Convert.ToInt32(Math.Abs(dest.GetLocation().Y - n.GetLocation().Y) / 2));
+                    }
+                       gx.DrawString(Convert.ToString(Math.Round(dist,2)),new Font(FontFamily.GenericSansSerif,5),edgeBrush,distanceLocation.X,distanceLocation.Y );
+                    */
+                }
+            }
+            #endregion
+
+            if (drawShortestPath)
+            {
+           #region DRAW SHORTEST PATH
+                /// 
+                /// 
+                /// 
+                for(int i = 0; i < shortestPath.Count-1; i++ ) 
+                {
+                    gx.DrawLine(new Pen(shortestBrush,3),shortestPath[i].GetLocation().X,shortestPath[i].GetLocation().Y,shortestPath[i+1].GetLocation().X,shortestPath[i+1].GetLocation().Y );
+                }
+           #endregion
+            }
+
+            if (nearestNode != null)
+            {
+                #region DRAW NEAREST POINT
+
+                foreach (DrawingNode dn in drawingNodes)
+                {
+                    if (dn.nodeID == nearestNode.GetId())
+                    {
+                        gx.FillEllipse(disabledBrush, dn.drawLocation.X - 4, dn.drawLocation.Y - 4, 8, 8);
+
+                    }
+                }
+
+                #endregion
+
+            }
+            
+        }
+
+        private void panel2_MouseMove(object sender, MouseEventArgs e)
+        {
+            string key = FindNearestNode(e.Location);
+            if (String.IsNullOrEmpty(key))
+            {
+                return;
+            }
+            nearestNode = g.FindNode(key);
+          //  panel2.Invalidate();
+        }
+
+        private void panel2_MouseClick(object sender, MouseEventArgs e)
+        {
+
+            if (!ShortestPathButton.Checked)
+            {
+                if (InsertNodeButton.Checked) // vkladame vrcholy
+            
+                    if(e.Button == MouseButtons.Left){
+                    #region INSERT NODE
+
+                {
+                    if (NodeTypeCombo.SelectedIndex == 0)
+                    {
+                        created = new Node(NodeType.Crossroads, new Point(e.Location.X, e.Location.Y));
+                    }
+                    else if (NodeTypeCombo.SelectedIndex == 1)
+                    {
+                        created = new Node(NodeType.RestingPlace, e.Location);
+                    }
+                    else
+                    {
+                        created = new Node(NodeType.BusStop, e.Location);
+                    }
+
+                    g.AddNewNode(created);
+                    string id = created.GetId();
+                    drawingNodes.Add(new DrawingNode(e.Location, id));
+
+                    // InsertNode();
+                    panel2.Invalidate();
+                    return;
+                }
+
+                #endregion
+
+                    }else if (e.Button == MouseButtons.Right)
+                    #region REMOVE NODE
+                    {
+                        if (drawingNodes.Count != 0)
+                        {
+                            g.RemoveNode(FindNearestNode(e.Location));
+                            DrawingNode removing = null;
+                            foreach (DrawingNode dn in drawingNodes)
+                            {
+                                if (FindNearestNode(e.Location).Equals(dn.nodeID))
+                                {
+                                    removing = dn;
+                                }
+                            }
+                            drawingNodes.Remove(removing);
+                            panel2.Invalidate();
+                        }
+                        else
+                        {
+                            MessageBox.Show("V grafu nejsou žádné vrcholy k odebrání", "Nelze odebrat vrchol");
+                        }
+                    } 
+                    #endregion
+
+                if (InsertEdgeButton.Checked) // vytvarime hrany
+                
+                    #region INSERT EDGE
+
+                {
+
+                    if (drawingNodes.Count == 0)
+                    {
+                        return;
+                    }
+                    string nearestkey = FindNearestNode(e.Location);
+                    {
+                        // je u bodu
+
+                        if (begining) // nastavujeme pocatecni bod
+                        {
+
+                            to = null;
+                            from = g.FindNode(nearestkey); // oznacit jako pocatek
+                            begining = false;
+
+                        }
+                        else //nastavujeme koncovy bod
+                        {
+                            to = g.FindNode(nearestkey); // oznacit jako konec
+                            begining = true;
+
+                        }
+                        if (to != null)
+                        {
+                            if (e.Button == MouseButtons.Left)
+                            {
+                                try
+                                {
+                                    g.AddNewEdge(from, to);
+                                }
+                                catch (LoopEdgeException exx)
+                                {
+                                    MessageBox.Show(
+                                        "Smyčková hrana nemůže být vložena ( počáteční vrchol se shoduje s koncovým)",
+                                        "Nelze vložit smyčkovou hranu");
+                                }
+                            }
+                            else if (e.Button == MouseButtons.Right)
+                            {
+                                foreach (Follower f in from.GetFollowers())
+                                {
+                                    if (f.GetReferencedKey() == to.GetId())
+                                    {
+                                        f.DisableEdge();
+                                    }
+                                }
+                                foreach (Follower f in to.GetFollowers())
+                                {
+                                    if (f.GetReferencedKey() == from.GetId())
+                                    {
+                                        f.DisableEdge();
+
+                                    }
+                                }
+                            }
+                        }
+
+                    }
+                   
+                    
+                    panel2.Invalidate();
+                    return;
+                }
+
+                #endregion}
+            }
+            else
+            {
+                    #region SHORTEST PATH
+                if (drawingNodes.Count == 0 || drawingNodes.Count == 1)
+                {
+                    MessageBox.Show("Nedostatek vrcholů pro výpočet cesty","Chyba hledání cesty");
+                    return;
+                }
+                if (e.Button == MouseButtons.Right)
+                {
+                    pathBegin = null;
+                    pathEnd = null;
+                    beginingPath = true;
+                    ShortestPathButton.Checked = false;
+                    
+                    return;
+                }
+                if (beginingPath)
+                {
+                    string key = FindNearestNode(e.Location);
+                    pathBegin = g.FindNode(key);
+                    beginingPath = false;
+                }
+                else  
+                {
+                    string key2 = FindNearestNode(e.Location);
+                    pathEnd = g.FindNode(key2);
+               
+                    shortestPath = dijkstra.ExecuteOptimized(pathBegin, pathEnd);
+                    drawShortestPath = true;
+                    panel2.Invalidate();
+                 
+                } 
+
+                #endregion
+            }
+           
+        }
+
+
+
+        private void InsertEdgeButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (InsertEdgeButton.Checked)
+            {
+                InsertNodeButton.Checked = false;
+            }
+            else
+            {
+                InsertNodeButton.Checked = true;
+            }
+        }
+
+        private void InsertNodeButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (InsertNodeButton.Checked)
+            {
+                InsertEdgeButton.Checked = false;
+            }
+            else
+            {
+                InsertEdgeButton.Checked = true;
+            }
+        }
+
+        private void ShortestPathButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (!ShortestPathButton.Checked)
+            {
+                shortestPath = new List<INode>();
+                drawShortestPath = false;
+                panel2.Invalidate();
+            }
+        }
+
+      private string FindNearestNode(Point e)
+      {
+          double dist = double.PositiveInfinity;
+          string key = null;
+          foreach (DrawingNode dn in drawingNodes)
+          {
+              double calcdist = Math.Sqrt(Math.Pow(dn.drawLocation.X - e.X, 2) + Math.Pow(dn.drawLocation.Y - e.Y, 2));
+              if (calcdist < dist)
+              {
+                  key = dn.nodeID;
+                  dist = calcdist;
+              }
+          }
+          return key;
+      }
+
+      private void panel2_MouseDown(object sender, MouseEventArgs e)
+      {
+         
+      }
+
+      
+
+      
+    }
+
+    internal class DrawingNode
+    {
+        public Point drawLocation;
+        public string nodeID;
+
+        public DrawingNode(Point loc, string nodeID)
+        {
+            drawLocation = loc;
+            this.nodeID = nodeID;
+        }
+    }
+}

@@ -1,0 +1,160 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+
+namespace INDSA_Sem_A
+{
+    public partial class MainForm : Form
+    {
+        private Graph g;
+      
+        private List<DrawingNode> drawingNodes;
+  
+        private Brush nodeBrush;
+        private Brush busBrush;
+        private Brush restBrush;
+        private Brush textBrush;
+        private Pen edgePen;
+        private Node created;
+        private bool begining;
+        public MainForm()
+        {
+            InitializeComponent();
+            drawingNodes = new List<DrawingNode>();
+            nodeBrush = new SolidBrush(Color.Black);
+            busBrush = new SolidBrush(Color.BlueViolet);
+            restBrush = new SolidBrush(Color.DarkOrange);
+            textBrush = new SolidBrush(Color.Brown);
+            NodeTypeCombo.SelectedIndex = 0;
+            created = null;
+            g = new Graph();
+            begining = true;
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+             Graphics gx = e.Graphics;
+
+            if (drawingNodes.Count == 0)
+            {
+                return;
+            }
+            foreach (DrawingNode dn in drawingNodes)
+            {
+                if (dn.nodeID.Contains("K"))
+                {
+                    gx.FillEllipse(nodeBrush, dn.drawLocation.X - 4, dn.drawLocation.Y - 4, 8, 8);
+                    gx.DrawString(dn.nodeID, new Font(FontFamily.GenericSansSerif, 6), nodeBrush, dn.drawLocation.X + 10, dn.drawLocation.Y - 10);
+
+
+                }else if (dn.nodeID.Contains("Z"))
+                {
+                    gx.FillEllipse(busBrush, dn.drawLocation.X - 4, dn.drawLocation.Y - 4, 8, 8);
+                    gx.DrawString(dn.nodeID, new Font(FontFamily.GenericSansSerif, 6), busBrush, dn.drawLocation.X + 10, dn.drawLocation.Y - 10);
+
+
+                }
+                else
+                {
+                    gx.FillEllipse(restBrush, dn.drawLocation.X - 4, dn.drawLocation.Y - 4, 8, 8);
+                    gx.DrawString(dn.nodeID,new Font(FontFamily.GenericSansSerif,6),restBrush,dn.drawLocation.X+10, dn.drawLocation.Y-10 );
+
+
+                }
+            }
+        }
+
+        private void panel2_MouseMove(object sender, MouseEventArgs e)
+        {
+
+        }
+
+        private void panel2_MouseClick(object sender, MouseEventArgs e)
+        {
+            
+            if (InsertNodeButton.Checked)
+            {
+                if (NodeTypeCombo.SelectedIndex == 0)
+                {
+                    created = new Node(NodeType.Crossroads, new Point(e.Location.X,e.Location.Y));
+                }
+                else if (NodeTypeCombo.SelectedIndex == 1)
+                {
+                    created = new Node(NodeType.RestingPlace, e.Location);
+                }
+                else
+                {
+                    created = new Node(NodeType.BusStop, e.Location);
+                }
+
+                g.AddNewNode(created);
+                string id = created.GetId();
+                drawingNodes.Add(new DrawingNode(e.Location,id));
+               
+               // InsertNode();
+                panel2.Invalidate();
+
+            }if (InsertEdgeButton.Checked)
+            {
+                // vybrat nejblizsi bod
+                // oznacit jako pocatek
+                //vybrat nejblizsi bod
+                // oznacit jako konec
+
+                // vlozit hranu
+            }
+        }
+
+        private void InsertNode()
+        {
+           
+        }
+
+        private void InsertEdgeButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (InsertEdgeButton.Checked)
+            {
+                InsertNodeButton.Checked = false;
+            }
+            else
+            {
+                InsertNodeButton.Checked = true;
+            }
+        }
+
+        private void InsertNodeButton_CheckedChanged(object sender, EventArgs e)
+        {
+            if (InsertNodeButton.Checked)
+            {
+                InsertEdgeButton.Checked = false;
+            }
+            else
+            {
+                InsertEdgeButton.Checked = true;
+            }
+        }
+
+      
+
+      
+
+      
+    }
+
+    internal class DrawingNode
+    {
+        public Point drawLocation;
+        public string nodeID;
+
+        public DrawingNode(Point loc, string nodeID)
+        {
+            drawLocation = loc;
+            this.nodeID = nodeID;
+        }
+    }
+}

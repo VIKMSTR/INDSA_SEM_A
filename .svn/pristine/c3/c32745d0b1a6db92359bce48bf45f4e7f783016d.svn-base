@@ -1,0 +1,43 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using INDSA_Sem_A.RangeTree;
+using Microsoft.VisualStudio.TestTools.UnitTesting;
+
+
+namespace UnitTestProject1
+{
+    [TestClass]
+    public class RangeTreeTest
+    {
+        [TestMethod]
+        public void TestBuilding()
+        {
+            List<GraphNode> graphNodes = new List<GraphNode>();
+          /* for (int i = 0; i < 20; i++)
+           {
+               graphNodes.Add(new GraphNode(Convert.ToString(i),new Point(i,i*2)));
+           }*/
+            graphNodes.Add(new GraphNode("aa", new Point(2,5)));
+            graphNodes.Add(new GraphNode("aa", new Point(3, 1)));
+            graphNodes.Add(new GraphNode("aa", new Point(4, 8)));
+            graphNodes.Add(new GraphNode("aa", new Point(3, 6)));
+            graphNodes.Add(new GraphNode("aa", new Point(9, 11)));
+            graphNodes.Add(new GraphNode("aa", new Point(5, 88)));
+            graphNodes.Add(new GraphNode("aa", new Point(40, 2)));
+            graphNodes.Add(new GraphNode("aa", new Point(52, 5)));
+
+            RangeTree2D rangeTree2D = new RangeTree2D(graphNodes);
+            TreeNode<GraphNode> root = rangeTree2D.Root;
+
+        
+        }
+        [TestMethod]
+        public void TestGetting()
+        {
+            
+        }
+    
+    }
+
+}

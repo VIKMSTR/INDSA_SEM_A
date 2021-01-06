@@ -1,0 +1,74 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Windows.Forms;
+
+namespace INDSA_Sem_A
+{
+
+
+  
+    public partial class MatrixForm : Form
+    {
+        private Dictionary<string, Dictionary<string, string>> fm;
+        public MatrixForm()
+        {
+            InitializeComponent();
+            dataGridView1.MultiSelect = false;
+
+        }
+
+        public void SetMatrix(Dictionary<string, Dictionary<string, string>> fm)
+        {
+            this.fm = fm;
+            fillGrid();
+        }
+
+        private void fillGrid()
+        {
+            int i = 0;
+            if (fm.Count == 0)
+            {
+                return;
+            }
+            dataGridView1.ColumnCount = fm.Count;
+            dataGridView1.Rows.Add(fm.Count);
+            foreach (string key in fm.Keys)
+            {
+                dataGridView1.Columns[i].Name = key;
+                dataGridView1.Columns[i].Resizable = DataGridViewTriState.False;
+                dataGridView1.Columns[i].SortMode = DataGridViewColumnSortMode.NotSortable;
+                dataGridView1.Columns[i].Width = 50;
+                DataGridViewRow row = dataGridView1.Rows[i];
+                row.HeaderCell.Value = key;
+                
+                row.Resizable = DataGridViewTriState.False;
+                row.ReadOnly = true;
+                i++;
+            }
+            i = 0;
+            int j;
+
+          foreach (string key in fm.Keys)
+            {
+                DataGridViewRow row = dataGridView1.Rows[i];
+                Dictionary<string, string> rowdata = fm[key];
+                j = 0;
+                foreach (string col in rowdata.Keys)
+                {
+                    DataGridViewCell dgc = new DataGridViewTextBoxCell();
+                    dgc.Value = rowdata[col];
+                    row.Cells[j].Value = rowdata[col];
+                    j++;
+                }
+
+                i++;
+            }
+
+        }
+    }
+}

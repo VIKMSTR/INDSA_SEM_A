@@ -1,0 +1,114 @@
+using System.Collections.Generic;
+
+namespace INDSA_Sem_A.Dijkstra
+{
+    public class DijkstraAlgorithm
+    {
+         //Postupnì naèítat vrcholy, nenaplnit to všemi najednou (neefektivní)
+        private Graph g;
+        private PriorityQueue<double, string> priority;
+        
+        private Dictionary<string, string> marked; //key - vrchol // value - id pøedchùdce
+
+        List<INode> ShortestPathNodes;
+        
+        public DijkstraAlgorithm(Graph g)
+        {
+            this.g = g;
+            priority = new PriorityQueue<double, string>();
+            ShortestPathNodes = new List<INode>();
+            marked = new Dictionary<string, string>();
+        }
+
+        public List<INode> Execute(INode start, INode finish)
+        {
+            //vstupni na 0
+            priority = new PriorityQueue<double, string>();
+            ShortestPathNodes = new List<INode>();
+            marked = new Dictionary<string, string>();
+            start.SetRank(0.0);
+            priority.Add(new KeyValuePair<double, string>(start.GetRank(),start.GetId())); //vložení poèáteèního vrcholu
+            while (!priority.IsEmpty)
+            {
+                INode node = g.FindNode(priority.DequeueValue());
+                INode next;
+                foreach (Follower f in node.GetFollowers()) // vsechny nasledniky
+                {
+                    string key;
+                    double dist;
+                    if (f.GetFollowingNode(out key, out dist)) // je pruchozi
+                    {
+                        next = g.FindNode(key);
+                        if ((dist + node.GetRank()) < next.GetRank())
+                        {
+                            priority.Remove(new KeyValuePair<double, string>(next.GetRank(), next.GetId()));
+                            next.SetRank(dist + node.GetRank()); // novej rank
+                            next.SetPredchudce(node);
+                        //    marked.Add(next.GetId(),node.GetId()); // predchudce nexta je node (key, key)
+                            priority.Add(new KeyValuePair<double, string>(next.GetRank(),next.GetId()));
+                        };
+                    }
+                }
+            }
+
+
+            /*Vypis*/
+            for (INode inode = finish; inode != null; inode = inode.GetPredchudce())
+            {
+                ShortestPathNodes.Add(inode);
+            }
+            //TODO: dodìlat zastavení na cílovém bodì (finish)
+            ShortestPathNodes.Reverse();
+
+                return ShortestPathNodes;
+        }
+        
+        public List<INode> ExecuteOptimized(INode start, INode finish)
+        {
+            priority.Clear();
+            ShortestPathNodes.Clear();
+            marked.Clear();
+
+            start.SetRank(0.0);
+
+            priority.Add(new KeyValuePair<double, string>(start.GetRank(), start.GetId())); //vložení poèáteèního vrcholu
+            while (!priority.IsEmpty)
+            {
+                INode node = g.FindNode(priority.DequeueValue());
+                if (node.GetId().Equals(finish.GetId()))
+                {
+                    break;
+                }
+                INode next;
+                foreach (Follower f in node.GetFollowers()) // vsechny nasledniky
+                {
+                    string key;
+                    double dist;
+                    if (f.GetFollowingNode(out key, out dist)) // je pruchozi
+                    {
+                        next = g.FindNode(key);
+                        if ((dist + node.GetRank()) < next.GetRank())
+                        {
+                   //         priority.Remove(new KeyValuePair<double, string>(next.GetRank(), next.GetId()));
+                            next.SetRank(dist + node.GetRank()); // novej rank
+                            next.SetPredchudce(node);
+                            //    marked.Add(next.GetId(),node.GetId()); // predchudce nexta je node (key, key)
+                            priority.Add(new KeyValuePair<double, string>(next.GetRank(), next.GetId()));
+                        };
+                    }
+                }
+            }
+
+            
+            /*Vypis*/
+            for (INode inode = finish; inode != null; inode = inode.GetPredchudce())
+            {
+                ShortestPathNodes.Add(inode);
+            }
+            
+            ShortestPathNodes.Reverse();
+
+            return ShortestPathNodes; 
+        } 
+    }
+}

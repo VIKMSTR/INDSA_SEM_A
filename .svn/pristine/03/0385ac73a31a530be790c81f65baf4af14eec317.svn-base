@@ -1,0 +1,10 @@
+﻿using System.Collections.Generic;
+
+namespace INDSA_Sem_A
+{
+    public class Graph : IGraph
+    {
+        public Dictionary<string, Node> Nodes;
+
+    }
+}

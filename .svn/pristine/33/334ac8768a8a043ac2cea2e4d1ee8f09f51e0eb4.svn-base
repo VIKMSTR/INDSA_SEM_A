@@ -1,0 +1,126 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Drawing;
+using INDSA_Sem_A.Exceptions;
+
+namespace INDSA_Sem_A
+{
+    public class Graph : IGraph<string,LinkedList<Follower>> //implementace IGrafu - klíče jsou stringy, followery jsou v seznamu
+    {
+        public Dictionary<string, INode> Nodes; // klíčem je string, hodnotou je objekt typu INode  (IVrchol)
+
+        public Graph()
+        {
+            Nodes = new Dictionary<string, INode>(StringComparer.CurrentCulture);
+        }
+        public bool IsEmpty()
+        {
+            if (Nodes.Count == 0)
+            {
+                return true;
+            }
+             return false;
+        }
+
+        public int NumberOfElements()
+        {
+            return Nodes.Count;
+        }
+
+        public void AddNewNode(INode n)
+        {
+            if (n != null)
+            {
+                
+            
+            Nodes.Add(n.GetId(),n);
+            }
+         
+        }
+
+        public void AddNewEdge(INode from , INode to)
+        {
+            INode accessed;
+            INode accessed2;
+
+            if (from.Equals(to))
+            {
+                throw new LoopEdgeException("Nelze vložit hranu - smyčku");
+            }
+            // zpristupnit vrchol, ze ktereho vede, 
+            if (Nodes.ContainsKey(from.GetId()))
+            {
+                accessed = Nodes[from.GetId()];
+            }
+            else
+            {
+                throw new NodeNotFoundException("Prvek neexistuje");
+            }
+            double distance = Math.Sqrt(Math.Pow(Math.Abs(80 - 40), 2) + Math.Pow(Math.Abs(160 - 40), 2));
+            //vlozit do nasledniku (pokud uz neexistuje)
+            Follower inserter = new Follower(to.GetId(),new Edge(distance));
+            accessed.GetFollowers().AddLast(inserter);
+
+            if (Nodes.ContainsKey(to.GetId()))
+            {
+                accessed2 = Nodes[to.GetId()];
+            }
+            else
+            {
+                throw new NodeNotFoundException("Prvek neexistuje");
+            }
+            accessed2.GetFollowers().AddLast(new Follower(from.GetId(), new Edge(distance)));
+
+
+        }
+
+        public INode RemoveNode(string key)
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public Edge RemoveEdge()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public INode FindNode(string key)
+        {
+            if (String.IsNullOrEmpty(key))
+            {
+                throw new InvalidKeyException("Prázdný klíč");
+            }
+            if (Nodes.ContainsKey(key))
+            {
+                return Nodes[key];
+            }
+            throw new NodeNotFoundException("Prvek nenalezen");
+        }
+
+        public Edge FindEdge()
+        {
+            throw new System.NotImplementedException();
+        }
+
+        public LinkedList<Follower> GetIncidentals(string key)
+        {
+            if (Nodes.ContainsKey(key))
+            {
+                
+            
+            return Nodes[key].GetFollowers();
+            }
+            throw new NodeNotFoundException("Prvek neexistuje");
+        }
+
+        public void GetAllNodes()
+        {
+            //TODO: dodělat getnutí všech prvků 
+            foreach (string s in Nodes.Keys)
+            {
+                Console.WriteLine("{0} - {1}",s,Nodes[s].ToString());
+                
+            }
+        }
+    }
+}

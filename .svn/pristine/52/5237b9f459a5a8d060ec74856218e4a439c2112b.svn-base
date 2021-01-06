@@ -1,0 +1,29 @@
+using System.Collections.Generic;
+
+namespace INDSA_Sem_A.Dijkstra
+{
+    public class DijkstraAlgorithm
+    {
+         //Postupnì naèítat vrcholy, nenaplnit to všemi najednou (neefektivní)
+        private Graph g;
+        private PriorityQueue<double, string> priority;
+        private Dictionary<double, string> marked;
+        List<string> ShortestPathNodes;
+
+        public DijkstraAlgorithm(Graph g)
+        {
+            this.g = g;
+            priority = new PriorityQueue<double, string>();
+            ShortestPathNodes = new List<string>();
+        }
+        public List<string> Execute(INode start, INode finish)
+        {
+
+            ShortestPathNodes.Add(start.GetId()); //vložení poèáteèního vrcholu
+
+
+
+            return ShortestPathNodes;
+        }
+    }
+}

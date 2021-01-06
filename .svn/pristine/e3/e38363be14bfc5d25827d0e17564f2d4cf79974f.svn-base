@@ -1,0 +1,39 @@
+﻿using System.Collections.Generic;
+using System.Drawing;
+
+namespace INDSA_Sem_A
+{
+    public class Node : INode
+    {
+        private string Id;
+        private LinkedList<Follower> followers ;
+        private NodeType nodeType;
+        private Point location;
+
+
+        public Node(NodeType nodeType, Point location  )
+        {
+            Id = Generator.CreateUniqueID(nodeType);
+            this.nodeType = nodeType;
+            followers = new LinkedList<Follower>();
+            this.location = location;
+
+        }
+
+        public override string ToString()
+        {
+            return "ID : " + Id + " Node Type: " + nodeType + ", located at: [" + location.X + "," + location.Y+ "] ";
+        }
+
+        public LinkedList<Follower> GetFollowers()
+        {
+            return followers;
+        } 
+
+
+        public string GetId()
+        {
+            return Id;
+        }
+    }
+}

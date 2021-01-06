@@ -1,0 +1,25 @@
+﻿using System.Collections.Generic;
+
+namespace INDSA_Sem_A
+{
+    public class DijkstraAlgorithm
+    {
+         //Postupně načítat vrcholy, nenaplnit to všemi najednou (neefektivní)
+        private Graph g;
+
+        public DijkstraAlgorithm(Graph g)
+        {
+            this.g = g;
+            List<> 
+        }
+        public double Execute()
+        {
+
+
+
+
+
+            return 0;
+        }
+    }
+}
